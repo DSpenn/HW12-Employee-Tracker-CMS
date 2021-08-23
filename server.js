@@ -1,6 +1,19 @@
 const inquirer = require('inquirer'); //import inquier
-//const mysql = require('mysql2');
-//const consoleTable = require('console.table');
+require('dotenv').config();
+//const sequelize = require('./config/connection');
+const mysql = require('mysql2');
+const consoleTable = require('console.table');
+
+const db = mysql.createConnection(
+  {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+  },
+  console.log(`Connected to database.`)
+);
+
 
 function init() {
     mainMenu();
@@ -22,7 +35,7 @@ function mainMenu() {
       if (menuAnswers.menuChoice === 'View All Departmements') ViewAllDepartmements();
       if (menuAnswers.menuChoice === 'Add Department') AddDepartment();
       if (menuAnswers.menuChoice === 'View All Employees') ViewAllEmployees();
-      if (menuAnswers.menuChoice === 'Exit') process.exit();
+      if (menuAnswers.menuChoice === 'Quit') process.exit();
     });
 }
 
@@ -54,10 +67,10 @@ const AddEmployeeQuestions = [{ //questions list for Add employee menu
 ];
 
 function AddEmployee() {
-    inquirer.prompt(AddEmployeeQuestions).then((answers) => {
-      console.log("AddEmployeeQuestion answers: ", answers);
-      // write to DB
-      mainMenu();
+    inquirer.prompt(AddEmployeeQuestions).then((addEmployeeAnswers) => {
+      //console.log("AddEmployeeQuestion answers: ", addEmployeeAnswers.first_name);
+      console.table(addEmployeeAnswers);
+      mainMenu(); //return to main menu
     });
 }
 
@@ -72,6 +85,7 @@ function ViewAllRoles() {
 }
 
 function AddRole() {
+  
  //get name of role
 }
 
