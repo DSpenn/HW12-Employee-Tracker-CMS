@@ -1,7 +1,5 @@
 # 12 SQL: Employee Tracker
 
-## Your Task
-
 Developers frequently have to create interfaces that allow non-developers to easily view and interact with information stored in databases. These interfaces are called **content management systems (CMS)**. Your assignment this week is to build a command-line application from scratch to manage a company's employee database, using Node.js, Inquirer, and MySQL.
 
 Because this application won’t be deployed, you’ll also need to create a walkthrough video that demonstrates its functionality and all of the following acceptance criteria being met. You’ll need to submit a link to the video and add it to the README of your project.
@@ -76,7 +74,7 @@ As the image illustrates, your schema should contain the following three tables:
 You might want to use a separate file that contains functions for performing specific SQL queries you'll need to use. A constructor function or class could be helpful for organizing these. You might also want to include a `seeds.sql` file to pre-populate your database, making the development of individual features much easier.
 
 ## Bonus
-
+```
 Try to add some additional functionality to your application, such as the ability to do the following:
 
 * Update employee managers.
@@ -85,9 +83,9 @@ Try to add some additional functionality to your application, such as the abilit
 * Delete departments, roles, and employees.
 
 * View the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department.
-
+```
 ## Grading Requirements
-
+```md
 [] A walkthrough video that demonstrates the functionality of the employee tracker must be submitted, and a link to the video should be included in your README file.
 [] The walkthrough video must show all of the technical acceptance criteria being met.
 [] The walkthrough video must demonstrate how a user would invoke the application from the command line.
@@ -105,20 +103,18 @@ Try to add some additional functionality to your application, such as the abilit
 [] Repository contains multiple descriptive commit messages.
 [] Repository contains a high-quality README with description and a link to a walkthrough video.
 [] The application user experience is intuitive and easy to navigate.
-
+```
 ### Bonus
-
+```
 Fulfilling any of the following can add up to 20 points to your grade. Note that the highest grade you can achieve is still 100:
-
 [] Application allows users to update employee managers (2 points).
 [] Application allows users to view employees by manager (2 points).
 [] Application allows users to view employees by department (2 points).
 [] Application allows users to delete departments, roles, and employees (2 points for each).
 [] Application allows users to view the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department (8 points).
-
-
+```
 #### Delete menu rough draft
-
+```
     choices: ['Add Employee',
      'Update Employee Role', 
      'View All Roles', 
@@ -156,3 +152,4 @@ View All Departmements
 Add Department
 View All Employees
 Quit
+```
