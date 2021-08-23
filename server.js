@@ -81,7 +81,8 @@ function UpdateEmployeeRole() {
 }
 
 function ViewAllRoles() {
-  // get all roles from sql
+  db.query('SELECT title FROM role', function(err, results) {
+    console.table(results); } );
 }
 
 function AddRole() {
@@ -90,7 +91,8 @@ function AddRole() {
 }
 
 function ViewAllDepartmements() {
- // get all departments from sql
+  db.query('SELECT name FROM department', function(err, results) {
+    console.table(results); } );
 }
 
 function AddDepartment() {
@@ -98,5 +100,6 @@ function AddDepartment() {
 }
 
 function ViewAllEmployees() {
-  //get all employees from sql
+  db.query('SELECT * FROM employee', function(err, results) {
+    console.table(results); } );
 }
