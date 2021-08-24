@@ -32,7 +32,7 @@ function mainMenu() {
       if (menuAnswers.menuChoice === 'Update Employee Role') UpdateEmployeeRole();
       if (menuAnswers.menuChoice === 'View All Roles') ViewAllRoles();
       if (menuAnswers.menuChoice === 'Add Role') AddRole();
-      if (menuAnswers.menuChoice === 'View All Departmements') ViewAllDepartmements();
+      if (menuAnswers.menuChoice === 'View All Departmements') ViewAllDepartments();
       if (menuAnswers.menuChoice === 'Add Department') AddDepartment();
       if (menuAnswers.menuChoice === 'View All Employees') ViewAllEmployees();
       if (menuAnswers.menuChoice === 'Quit') process.exit();
@@ -56,7 +56,8 @@ const AddEmployeeQuestions = [{ //questions list for Add employee menu
     type: 'list',
     message: 'What is the employees role?',
     name: 'employee_Role',
-    choices: ['Sales Lead', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer', 'Customer Service', 'Sales Lead', 'Salesperson', 'Lead Engineer' ],
+    //choices: ViewAllRoles(),
+    choices: ['1: Sales Lead', '2: Lead Engineer', '3: Software Engineer', '4: Account Manager', '5: Accountant', '6: Legal Team Lead', '7: Lawyer', '8: Customer Service', '9: Sales Lead', '10: Salesperson', '11: Lead Engineer' ],
   },
   {
     type: 'input',
@@ -68,21 +69,31 @@ const AddEmployeeQuestions = [{ //questions list for Add employee menu
 
 function AddEmployee() {
     inquirer.prompt(AddEmployeeQuestions).then((addEmployeeAnswers) => {
-      //console.log("AddEmployeeQuestion answers: ", addEmployeeAnswers.first_name);
       console.table(addEmployeeAnswers);
+      db.query("INSERT INTO employee SET ?", 
+      { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, 
+        manager_id: addEmployeeAnswers.employees_Manager,
+        role_id: addEmployeeAnswers.employee_Role.charAt(0) },
+       function(err, results) {     
+        console.log(results);
+        console.log('\n'+err);
+      });
       mainMenu(); //return to main menu
     });
 }
 
 function UpdateEmployeeRole() {
-  // select employee
-  // change role based on input
-
+  db.query('SELECT * FROM employee', function(err, results) {
+    console.table(results);
+  });
+  mainMenu();
 }
 
 function ViewAllRoles() {
   db.query('SELECT title FROM role', function(err, results) {
-    console.table(results); } );
+    console.table(results);
+    return results; } );
+  mainMenu();
 }
 
 function AddRole() {
@@ -90,9 +101,10 @@ function AddRole() {
  //get name of role
 }
 
-function ViewAllDepartmements() {
-  db.query('SELECT name FROM department', function(err, results) {
-    console.table(results); } );
+function ViewAllDepartments() {
+  db.query('SELECT name FROM department', function(err, departments) {
+    console.table(departments); } );
+  mainMenu();
 }
 
 function AddDepartment() {
@@ -101,5 +113,7 @@ function AddDepartment() {
 
 function ViewAllEmployees() {
   db.query('SELECT * FROM employee', function(err, results) {
-    console.table(results); } );
+    console.table(results); 
+   } );
+  mainMenu();
 }
