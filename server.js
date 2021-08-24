@@ -1,21 +1,12 @@
 const inquirer = require('inquirer'); //import inquier
 require('dotenv').config();
 //const sequelize = require('./config/connection');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const consoleTable = require('console.table');
-
-const db = mysql.createConnection(
-  {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-  },
-  console.log(`Connected to database.`)
-);
+const db = mysql.createPool({host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_NAME});
 
 
-function init() {
+function main() {
     mainMenu();
 }
 
@@ -39,7 +30,7 @@ function mainMenu() {
     });
 }
 
-init();
+main();
 
 
 const AddEmployeeQuestions = [{ //questions list for Add employee menu
@@ -67,53 +58,52 @@ const AddEmployeeQuestions = [{ //questions list for Add employee menu
   },
 ];
 
-function AddEmployee() {
-    inquirer.prompt(AddEmployeeQuestions).then((addEmployeeAnswers) => {
-      console.table(addEmployeeAnswers);
-      db.query("INSERT INTO employee SET ?", 
-      { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, 
-        manager_id: addEmployeeAnswers.employees_Manager,
-        role_id: addEmployeeAnswers.employee_Role.charAt(0) },
-       function(err, results) {     
-        console.log(results);
-        console.log('\n'+err);
-      });
-      mainMenu(); //return to main menu
-    });
+async function AddEmployee() {
+  const addEmployeeAnswers = await inquirer.prompt(AddEmployeeQuestions);
+  console.table(addEmployeeAnswers);
+  await db.query( 'INSERT INTO employee SET ?', 
+    { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
+    role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
+  //mainMenu();
 }
 
-function UpdateEmployeeRole() {
+function UpdateEmployeeRole() { //redo
   db.query('SELECT * FROM employee', function(err, results) {
     console.table(results);
   });
   mainMenu();
 }
 
-function ViewAllRoles() {
-  db.query('SELECT title FROM role', function(err, results) {
-    console.table(results);
-    return results; } );
+// job title, role id, the department that role belongs to, and the salary for that role
+async function ViewAllRoles() {
+  const [CurrentRoles] = await db.query('SELECT * FROM role');
+  //console.log("CurrentRoles", CurrentRoles); //object
+  console.table(CurrentRoles);
   mainMenu();
+  return CurrentRoles;
 }
 
 function AddRole() {
-  
- //get name of role
+  //inquier prompts
 }
 
-function ViewAllDepartments() {
-  db.query('SELECT name FROM department', function(err, departments) {
-    console.table(departments); } );
+//department names and department ids
+async function ViewAllDepartments() {
+  const [currentDepartments] = await db.query('SELECT * FROM department');
+  console.table(currentDepartments);
+  //console.log(currentDepartments);
   mainMenu();
+  return currentDepartments[0];
 }
 
 function AddDepartment() {
-  //questions to add department
+  //inquier prompts to add department
 }
 
-function ViewAllEmployees() {
-  db.query('SELECT * FROM employee', function(err, results) {
-    console.table(results); 
-   } );
+//employee ids, first names, last names, job titles, departments, salaries, and managers
+async function ViewAllEmployees() {
+  const [currentEmployees] = await db.query('SELECT * FROM employee');
+  console.table(currentEmployees);
   mainMenu();
+  return currentEmployees[0];
 }
