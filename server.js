@@ -4,6 +4,9 @@ require('dotenv').config();
 const mysql = require('mysql2/promise');
 const consoleTable = require('console.table');
 const db = mysql.createPool({host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_NAME});
+var currentEmployees = [];
+var currentDepartments = [];
+var CurrentRoles = [];
 
 
 function main() {
@@ -47,24 +50,27 @@ const AddEmployeeQuestions = [{ //questions list for Add employee menu
     type: 'list',
     message: 'What is the employees role?',
     name: 'employee_Role',
-    //choices: ViewAllRoles(),
     choices: ['1: Sales Lead', '2: Lead Engineer', '3: Software Engineer', '4: Account Manager', '5: Accountant', '6: Legal Team Lead', '7: Lawyer', '8: Customer Service', '9: Sales Lead', '10: Salesperson', '11: Lead Engineer' ],
+    //choices: [CurrentRoles.map(obj => obj.name)]
   },
   {
-    type: 'input',
+    type: 'list',
     name: 'employees_Manager',
-    message: "Who is their Manager?"
-    //choices: get list of names from db
-  },
+    message: "Who is their Manager?",
+    choices: [currentEmployees.map(obj => obj.last_name)]
+    //default: '1'
+  }
 ];
 
 async function AddEmployee() {
+  //console.log(" in add emp currentEmployees", currentEmployees);
+  //console.log("ViewAllEmployees()" , ViewAllEmployees());
   const addEmployeeAnswers = await inquirer.prompt(AddEmployeeQuestions);
   console.table(addEmployeeAnswers);
   await db.query( 'INSERT INTO employee SET ?', 
     { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
     role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
-  //mainMenu();
+  mainMenu();
 }
 
 function UpdateEmployeeRole() { //redo
@@ -76,7 +82,7 @@ function UpdateEmployeeRole() { //redo
 
 // job title, role id, the department that role belongs to, and the salary for that role
 async function ViewAllRoles() {
-  const [CurrentRoles] = await db.query('SELECT * FROM role');
+  [CurrentRoles] = await db.query('SELECT * FROM role');
   //console.log("CurrentRoles", CurrentRoles); //object
   console.table(CurrentRoles);
   mainMenu();
@@ -87,9 +93,9 @@ function AddRole() {
   //inquier prompts
 }
 
-//department names and department ids
+//department names and department ids DONE
 async function ViewAllDepartments() {
-  const [currentDepartments] = await db.query('SELECT * FROM department');
+  [currentDepartments] = await db.query('SELECT * FROM department');
   console.table(currentDepartments);
   //console.log(currentDepartments);
   mainMenu();
@@ -102,8 +108,10 @@ function AddDepartment() {
 
 //employee ids, first names, last names, job titles, departments, salaries, and managers
 async function ViewAllEmployees() {
-  const [currentEmployees] = await db.query('SELECT * FROM employee');
-  console.table(currentEmployees);
+  [currentEmployees] = await db.query('SELECT * FROM employee');
+  //console.table(currentEmployees);
+  console.log("currentEmployees.map(obj => obj.first_name)," + currentEmployees.map(obj => obj.last_name))
   mainMenu();
-  return currentEmployees[0];
+  //console.log(" post currentEmployees", currentEmployees);
+  return currentEmployees;
 }
