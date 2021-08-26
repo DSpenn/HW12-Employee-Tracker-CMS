@@ -8,6 +8,7 @@ var currentEmployees = [];
 var currentDepartments = [];
 var employeeArray = [];
 var rolesArray = [];
+var departmentArray = [];
 
 const menu = [{ //main menu
     type: 'list',
@@ -105,9 +106,20 @@ function ViewAllDepartments() { //department names and department ids DONE
   });
 }
 
+/*
 function UpdateEmployeeRole() {
+  inquirer.prompt([{    
+    type: 'list',
+    name: 'name',
+    message: "Update Role for which employee??",
+    choices: blah
+    }]).then(something => {
+        //db.query( 
+      main();
+    })
 
 }
+*/
 
 function AddDepartment() { 
   inquirer.prompt([{    
@@ -120,29 +132,36 @@ function AddDepartment() {
   })
 }
 
-function AddRole() {  // needs call for department id / choices list
-  //inq prompt name, salary, and department
+function AddRole() { 
+  db.query(`SELECT * FROM department`, function (err, results) 
+  {
+    console.log("'\n'");
+    results.forEach((value) => 
+    {
+      console.log("value", value);
+      departmentArray.push(value.id+" "+value.name);
+    });
+  });
   inquirer.prompt([{    
     type: 'input',
-    name: 'name',
-    message: "What is this department called?"
+    name: 'title',
+    message: "What is this role title?"
     },
     {
     type: 'input',
-    name: 'salery',
-    message: "What is the salery?"
+    name: 'salary',
+    message: "What is the salary?"
     },
     {
-    type: 'input',
+    type: 'list',
     name: 'department_id',
-    message: "What is the department_id?"
+    message: "What is the department_id?",
+    choices: departmentArray
     }
   ]).then(newRole => {
-        db.query( 'INSERT INTO role SET ?', { name: newRole.name, salery: newRole.salery, department_id: newRole.department_id });
+        db.query( 'INSERT INTO role SET ?', { title: newRole.title, salary: newRole.salary, department_id: newRole.department_id.charAt(0) });
       main();
     })
-
-
 }
 
 function ViewEmployeesByDepartment() {
