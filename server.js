@@ -42,17 +42,19 @@ main();
 function AddEmployee() {
   db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee', function (err, results) {
     //console.table(results);
-    console.log("results.length", results.length)    
     for (i = 0; i < results.length; i++) {
-      employeeArray.push(results[i].manager);
+      console.log(results[i].id+" "+results[i].manager);
       }
-      console.info("ASDSADSADSADAS" , employeeArray[0]);
-      console.log("employeeArray.length in ", employeeArray.length);
+    console.log("results.length", results.length)    
+    
+    for (i = 0; i < results.length; i++) {
+      employeeArray.push(results[i].id+" "+results[i].manager);
+      }
+      //console.info("blah" , employeeArray[0]);
+     // console.log("employeeArray.length in ", employeeArray.length);
       for(var i=0; i < employeeArray.length; i++) {
-        console.log("ba", employeeArray[i] + "!");
+        console.log("test array", employeeArray[i]);
       }
-  console.log("employeeArray.length out", employeeArray.length);
-
 
   inquirer.prompt([ 
     { //questions list for Add employee menu
@@ -79,8 +81,10 @@ function AddEmployee() {
     choices: employeeArray
   }
   ]).then(addEmployeeAnswers => {
+
+
     db.query( 'INSERT INTO employee SET ?', 
-    { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
+    { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager.charAt(0),
     role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
     mainMenu();
       });
@@ -99,13 +103,13 @@ function UpdateEmployeeRole() { //redo
   mainMenu();
 })}
 
-// job title, role id, the department that role belongs to, and the salary for that role
-
+// job title, role id, the department that role belongs to, and the salary for that role Done
 function ViewAllRoles() {
   db.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department FROM employee 
     LEFT JOIN role ON employee.role_id = role.id 
     LEFT JOIN department ON role.department_id = department.id 
     ORDER BY role.title`, function (err, results) {
+  console.log("'\n''\n'");
   console.table(results);
   CurrentRoles = results;
 }  );
