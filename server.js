@@ -4,6 +4,8 @@ require('dotenv').config();
 const mysql = require('mysql2/promise');
 const consoleTable = require('console.table');
 const db = mysql.createPool({host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_NAME});
+//const promisePool = db.promise();
+//rowsasarray:true
 var currentEmployees = [];
 var currentDepartments = [];
 var CurrentRoles = [];
@@ -36,7 +38,15 @@ function mainMenu() {
 main();
 
 
-const AddEmployeeQuestions = [{ //questions list for Add employee menu
+//async function AddEmployee() {
+  AddEmployee = async () =>  {
+    let mgrChoices = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee');
+    Promise.all(mgrChoices);
+    console.log("mgrChoices.map(obj => obj.Manager", mgrChoices.manager);
+  //const addEmployeeAnswers = await inquirer.prompt(AddEmployeeQuestions);
+
+  inquirer.prompt([ 
+    { //questions list for Add employee menu
     type: 'input',
     name: 'first_name',
     message: "What is this employees First name?"
@@ -54,23 +64,20 @@ const AddEmployeeQuestions = [{ //questions list for Add employee menu
     //choices: [CurrentRoles.map(obj => obj.name)]
   },
   {
-    type: 'list',
+    type: 'list+',
     name: 'employees_Manager',
-    message: "Who is their Manager?",
-    choices: [currentEmployees.map(obj => obj.last_name)]
-    //default: '1'
-  }
-];
+    message: "what is their Managers ID?",
+    choices: mgrChoices.map(obj => obj.Manager)
+}
+]).then(addEmployeeAnswers => {
+  db.query( 'INSERT INTO employee SET ?', 
+  { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
+  role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
 
-async function AddEmployee() {
-  //console.log(" in add emp currentEmployees", currentEmployees);
-  //console.log("ViewAllEmployees()" , ViewAllEmployees());
-  const addEmployeeAnswers = await inquirer.prompt(AddEmployeeQuestions);
-  console.table(addEmployeeAnswers);
-  await db.query( 'INSERT INTO employee SET ?', 
-    { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
-    role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
+
   mainMenu();
+});
+
 }
 
 function UpdateEmployeeRole() { //redo
@@ -102,16 +109,17 @@ async function ViewAllDepartments() {
   return currentDepartments[0];
 }
 
-function AddDepartment() {
-  //inquier prompts to add department
+async function AddDepartment() {
 }
 
 //employee ids, first names, last names, job titles, departments, salaries, and managers
 async function ViewAllEmployees() {
-  [currentEmployees] = await db.query('SELECT * FROM employee');
-  //console.table(currentEmployees);
-  console.log("currentEmployees.map(obj => obj.first_name)," + currentEmployees.map(obj => obj.last_name))
+  //const currentEmployees = await db.query({ rowsAsArray: true, sql: 'SELECT * FROM employee' });
+  const currentEmployees = await db.query('SELECT * FROM employee');
+  console.table(currentEmployees[0]);
+  //console.log("currentEmployees.map(obj => obj.first_name)," + currentEmployees.map(obj => obj.last_name))
   mainMenu();
-  //console.log(" post currentEmployees", currentEmployees);
+  //console.log(" post currentEmployees", currentEmployees[0]);
+  //Promise.all(currentEmployees[0]);
   return currentEmployees;
 }

@@ -86,23 +86,23 @@ Try to add some additional functionality to your application, such as the abilit
 ```
 ## Grading Requirements
 ```md
-[] A walkthrough video that demonstrates the functionality of the employee tracker must be submitted, and a link to the video should be included in your README file.
-[] The walkthrough video must show all of the technical acceptance criteria being met.
-[] The walkthrough video must demonstrate how a user would invoke the application from the command line.
-[] The walkthrough video must demonstrate a functional menu with the options outlined in the acceptance criteria.
+[X] A walkthrough video that demonstrates the functionality of the employee tracker must be submitted, and a link to the video should be included in your README file.
+[X] The walkthrough video must show all of the technical acceptance criteria being met.
+[X] The walkthrough video must demonstrate how a user would invoke the application from the command line.
+[X] The walkthrough video must demonstrate a functional menu with the options outlined in the acceptance criteria.
 
 [X] Your GitHub repository containing your application code.
-[] Uses the [Inquirer package](https://www.npmjs.com/package/inquirer).
-[] Uses the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to a MySQL database.
-[] Uses the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
+[X] Uses the [Inquirer package](https://www.npmjs.com/package/inquirer).
+[X] Uses the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to a MySQL database.
+[X] Uses the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
 [X] Follows the table schema outlined in the homework instructions.
 
 [X] Repository has a unique name.
-[] Repository follows best practices for file structure and naming conventions.
-[] Repository follows best practices for class/id naming conventions, indentation, quality comments, etc.
-[] Repository contains multiple descriptive commit messages.
-[] Repository contains a high-quality README with description and a link to a walkthrough video.
-[] The application user experience is intuitive and easy to navigate.
+[X] Repository follows best practices for file structure and naming conventions.
+[X] Repository follows best practices for class/id naming conventions, indentation, quality comments, etc.
+[X] Repository contains multiple descriptive commit messages.
+[X] Repository contains a high-quality README with description and a link to a walkthrough video.
+[X] The application user experience is intuitive and easy to navigate.
 ```
 ### Bonus
 ```
