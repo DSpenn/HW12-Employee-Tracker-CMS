@@ -23,10 +23,10 @@ WHEN I choose to view all departments
 [X]THEN I am presented with a formatted table showing department names and department ids
 
 WHEN I choose to view all roles
-[]THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+[X]THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
 
 WHEN I choose to view all employees
-[] THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+[X] THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
 
 WHEN I choose to add a department
 [] THEN I am prompted to enter the name of the department and that department is added to the database
@@ -35,7 +35,7 @@ WHEN I choose to add a role
 [] THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 
 WHEN I choose to add an employee
-[] THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+[-] THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 
 WHEN I choose to update an employee role
 [] THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
@@ -56,9 +56,7 @@ You’ll need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) 
 You might also want to make your queries asynchronous. MySQL2 exposes a `.promise()` function on Connections to upgrade an existing non-Promise connection to use Promises. To learn more and make your queries asynchronous, refer to the [npm documentation on MySQL2](https://www.npmjs.com/package/mysql2).
 
 Design the database schema as shown in the following image:
-
 ![Database schema includes tables labeled “employee,” role,” and “department.”](./Assets/12-sql-homework-demo-01.png)
-
 As the image illustrates, your schema should contain the following three tables:
 
 * `department`
@@ -88,15 +86,14 @@ Try to add some additional functionality to your application, such as the abilit
 * View employees by manager.
 * View employees by department.
 * Delete departments, roles, and employees.
-
 * View the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department.
 ```
 ## Grading Requirements
 ```md
-[X] A walkthrough video that demonstrates the functionality of the employee tracker must be submitted, and a link to the video should be included in your README file.
-[X] The walkthrough video must show all of the technical acceptance criteria being met.
-[X] The walkthrough video must demonstrate how a user would invoke the application from the command line.
-[X] The walkthrough video must demonstrate a functional menu with the options outlined in the acceptance criteria.
+[] A walkthrough video that demonstrates the functionality of the employee tracker must be submitted, and a link to the video should be included in your README file.
+[] The walkthrough video must show all of the technical acceptance criteria being met.
+[] The walkthrough video must demonstrate how a user would invoke the application from the command line.
+[] The walkthrough video must demonstrate a functional menu with the options outlined in the acceptance criteria.
 
 [X] Your GitHub repository containing your application code.
 [X] Uses the [Inquirer package](https://www.npmjs.com/package/inquirer).
