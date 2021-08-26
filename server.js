@@ -9,6 +9,7 @@ const db = mysql.createPool({host: process.env.DB_HOST, user: process.env.DB_USE
 var currentEmployees = [];
 var currentDepartments = [];
 var CurrentRoles = [];
+var mgrChoices;
 
 
 function main() {
@@ -38,11 +39,24 @@ function mainMenu() {
 main();
 
 
+
+
+
+
+/*
 //async function AddEmployee() {
-  AddEmployee = async () =>  {
-    let mgrChoices = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee');
-    Promise.all(mgrChoices);
-    console.log("mgrChoices.map(obj => obj.Manager", mgrChoices.manager);
+AddEmployee = async () =>  {
+  const mgrChoices = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee');
+  
+  var employeeArray = [];
+  for (i = 0; i < mgrChoices.length; i++) {
+    employeeArray.push(mgrChoices[i].manager);
+    }
+    console.log(employeeArray);
+  }
+
+    //const mgrChoices = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee');
+    //Promise.all(mgrChoices);
   //const addEmployeeAnswers = await inquirer.prompt(AddEmployeeQuestions);
 
   inquirer.prompt([ 
@@ -64,21 +78,19 @@ main();
     //choices: [CurrentRoles.map(obj => obj.name)]
   },
   {
-    type: 'list+',
+    type: 'list',
     name: 'employees_Manager',
     message: "what is their Managers ID?",
-    choices: mgrChoices.map(obj => obj.Manager)
-}
-]).then(addEmployeeAnswers => {
+    choices: [mgrChoices]
+  }
+  ]).then(addEmployeeAnswers => {
   db.query( 'INSERT INTO employee SET ?', 
   { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
   role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
 
 
   mainMenu();
-});
-
-}
+}); */
 
 function UpdateEmployeeRole() { //redo
   db.query('SELECT * FROM employee', function(err, results) {
@@ -88,9 +100,12 @@ function UpdateEmployeeRole() { //redo
 }
 
 // job title, role id, the department that role belongs to, and the salary for that role
+
 async function ViewAllRoles() {
-  [CurrentRoles] = await db.query('SELECT * FROM role');
-  //console.log("CurrentRoles", CurrentRoles); //object
+  [CurrentRoles] = await db.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department FROM employee 
+    LEFT JOIN role ON employee.role_id = role.id 
+    LEFT JOIN department ON role.department_id = department.id 
+    ORDER BY role.title`);
   console.table(CurrentRoles);
   mainMenu();
   return CurrentRoles;
@@ -99,6 +114,7 @@ async function ViewAllRoles() {
 function AddRole() {
   //inquier prompts
 }
+
 
 //department names and department ids DONE
 async function ViewAllDepartments() {
