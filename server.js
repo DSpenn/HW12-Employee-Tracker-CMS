@@ -6,57 +6,43 @@ const db = mysql.createConnection({host: process.env.DB_HOST,port: 3306, user: p
 
 var currentEmployees = [];
 var currentDepartments = [];
-var CurrentRoles = [];
 var employeeArray = [];
-
-function main() {
-    mainMenu();
-    //console.log("currentEmployees in main", currentEmployees);
-    //console.log("'\n''\n'");
-    //console.log("'\n'currentDepartments in main: " + currentDepartments);
-}
+var rolesArray = [];
 
 const menu = [{ //main menu
     type: 'list',
     message: 'Main Menu',
     name: 'menuChoice',
-    choices: ['Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departmements', 'Add Department', 'View All Employees', 'Quit'],
+    choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departmements', 'Add Department', 'ViewEmployeesByDepartment', 'ViewEmployeesByManager', 'Quit'],
   }];
 
 function mainMenu() {
     inquirer.prompt(menu).then((menuAnswers) => { 
+      if (menuAnswers.menuChoice === 'View All Employees') ViewAllEmployees();
       if (menuAnswers.menuChoice === 'Add Employee') AddEmployee();
       if (menuAnswers.menuChoice === 'Update Employee Role') UpdateEmployeeRole();
       if (menuAnswers.menuChoice === 'View All Roles') ViewAllRoles();
       if (menuAnswers.menuChoice === 'Add Role') AddRole();
       if (menuAnswers.menuChoice === 'View All Departmements') ViewAllDepartments();
       if (menuAnswers.menuChoice === 'Add Department') AddDepartment();
-      if (menuAnswers.menuChoice === 'View All Employees') ViewAllEmployees();
+      if (menuAnswers.menuChoice === 'ViewEmployeesByDepartment') ViewEmployeesByDepartment();
+      if (menuAnswers.menuChoice === 'ViewEmployeesByManager') ViewEmployeesByManager();
       if (menuAnswers.menuChoice === 'Quit') process.exit();
     });
 }
 
 main();
 
-
-//needs var for role
 function AddEmployee() {
   db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee', function (err, results) 
-{
+  {
+    employeeArray = [];
     console.table(results);
-    for (i = 0; i < results.length; i++) {
-      console.log(results[i].id+" "+results[i].manager);
-      }
 
-    console.log("results.length", results.length)    
-    
+    console.log("results.length/ employee Count", results.length)    
     for (i = 0; i < results.length; i++) {
       employeeArray.push(results[i].id+" "+results[i].manager);
     }
-
-      for(var i=0; i < employeeArray.length; i++) {
-        console.log("test array", employeeArray[i]);
-      }
 
   inquirer.prompt([{ //questions list for Add employee menu
     type: 'input',
@@ -72,7 +58,8 @@ function AddEmployee() {
     type: 'list',
     message: 'What is the employees role?',
     name: 'employee_Role',
-    choices: ['1: Sales Lead', '2: Lead Engineer', '3: Software Engineer', '4: Account Manager', '5: Accountant', '6: Legal Team Lead', '7: Lawyer', '8: Customer Service', '9: Salesperson' ],
+    //choices: ['1: Sales Lead', '2: Lead Engineer', '3: Software Engineer', '4: Account Manager', '5: Accountant', '6: Legal Team Lead', '7: Lawyer', '8: Customer Service', '9: Salesperson' ],
+    choices: rolesArray
   },
   {
     type: 'list',
@@ -81,80 +68,115 @@ function AddEmployee() {
     choices: employeeArray
   }
   ]).then(addEmployeeAnswers => {
-    db.query( 'INSERT INTO employee SET ?', { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name,
-      manager_id: addEmployeeAnswers.employees_Manager.charAt(0),role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
-    main();
+      db.query( 'INSERT INTO employee SET ?', { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name,
+        manager_id: addEmployeeAnswers.employees_Manager.charAt(0),role_id: addEmployeeAnswers.employee_Role.charAt(0) });
+      main();
   })
-});
+  });
 }
 
-//CONCAT(employee.first_name, " ", employee.last_name) AS Name,
-// db.query(`SELECT role.title, role.id, department.name as Department, role.salary FROM employee 
-//  db.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department FROM employee 
-//  db.query(`SELECT role.title, role.id, department.name as Department, role.salary,CONCAT(employee.first_name, " ", employee.last_name) AS Name FROM employee 
 function ViewAllRoles() { // job title, role id, the department that role belongs to, and the salary for that role Done
-  db.query(`SELECT DISTINCT role.title, role.id, department.name as Department, role.salary FROM employee 
-    LEFT JOIN role ON employee.role_id = role.id 
+  rolesArray = [];
+  db.query(`SELECT DISTINCT role.title, role.id, department.name as Department, role.salary FROM role 
     LEFT JOIN department ON role.department_id = department.id 
-    ORDER BY role.title`, function (err, results) {
-  console.log("'\n'");
-  console.table(results);
-}  );
-  main();
+    ORDER BY role.id`, function (err, results) 
+    {
+      console.log("'\n'");
+      console.table(results);
+      results.forEach((value) => 
+      {
+        //console.log("value", value);
+        rolesArray.push(value.id+" "+value.title);
+      });
+    main();
+  });
 }
-
-//department names and department ids DONE
-function ViewAllDepartments() {
+    
+function ViewAllDepartments() { //department names and department ids DONE
+  currentDepartments = []; // clear incase ran multiple times.
   db.promise().query("SELECT * FROM department")
   .then( ([rows,fields]) => {
-    //console.log("department rows ", rows);
     console.table(rows);
     rows.forEach((value) => {
       //console.log("value", value);
       currentDepartments.push(value);
     });
+    main();
+  });
+}
+
+function UpdateEmployeeRole() {
+
+}
+
+function AddDepartment() { 
+  inquirer.prompt([{    
+  type: 'input',
+  name: 'name',
+  message: "What is this department called?"
+  }]).then(newDepartment => {
+      db.query( 'INSERT INTO department SET ?', { name: newDepartment.name });
+    main();
   })
-  .catch(console.log)
-  .then( () => db.close());
-  main();
-  return currentDepartments;
 }
 
-function UpdateEmployeeRole() { 
-// prompted to select an employee to update and their new role
-}
-
-function AddDepartment() {
-  //inq prompt for name of new department.
-}
-
-function AddRole() { 
+function AddRole() {  // needs call for department id / choices list
   //inq prompt name, salary, and department
+  inquirer.prompt([{    
+    type: 'input',
+    name: 'name',
+    message: "What is this department called?"
+    },
+    {
+    type: 'input',
+    name: 'salery',
+    message: "What is the salery?"
+    },
+    {
+    type: 'input',
+    name: 'department_id',
+    message: "What is the department_id?"
+    }
+  ]).then(newRole => {
+        db.query( 'INSERT INTO role SET ?', { name: newRole.name, salery: newRole.salery, department_id: newRole.department_id });
+      main();
+    })
+
 
 }
 
-//* View employees by department.
+function ViewEmployeesByDepartment() {
 
-//* View employees by manager.
+}
 
+function ViewEmployeesByManager() {
 
-//employee ids, first names, last names, job titles, departments, salaries, and managers DONE
-function ViewAllEmployees() {
+}
+
+function ViewAllEmployees() {// Done employee ids, first names, last names, job titles, departments, salaries, and managers DONE
   db.query(`SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department, CONCAT(mgr.first_name, " ", mgr.last_name) AS manager FROM employee 
     LEFT JOIN role ON employee.role_id = role.id 
     LEFT JOIN department ON role.department_id = department.id 
     LEFT JOIN employee mgr ON mgr.id = employee.manager_id
     ORDER BY role.title`, function (err, results) {
-  console.log("'\n'");
-  console.table(results);
-  results.forEach((value) => {
-    //console.log("value", value);
-    currentEmployees.push(value);
+      console.log("'\n'");
+      console.table(results);
+      results.forEach((value) => {
+        //console.log("value", value);
+        currentEmployees.push(value);
+     });
+    main();
   });
-  main();
-  }  );
 }
 
+function main() {
+  mainMenu();
+  //console.log(currentEmployees);
+  //console.log("'\n''\n'");
+  console.log(currentDepartments);
+  //console.log("'\n''\n'");
+  //console.log(rolesArray)
 
-  //console.log(" post currentEmployees", currentEmployees[0]);
-  //Promise.all(currentEmployees[0]);
+  // push values to array only if they dont exist?
+  //employee array and current employees mostly same
+}
