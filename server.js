@@ -1,15 +1,14 @@
 const inquirer = require('inquirer'); //import inquier
 require('dotenv').config();
 //const sequelize = require('./config/connection');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 const consoleTable = require('console.table');
-const db = mysql.createPool({host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_NAME});
-//const promisePool = db.promise();
-//rowsasarray:true
+const db = mysql.createConnection({host: process.env.DB_HOST,port: 3306, user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_NAME});//rowsasarray:true
 var currentEmployees = [];
 var currentDepartments = [];
 var CurrentRoles = [];
-var mgrChoices;
+var mgrChoices = [];
+var employeeArray = [];
 
 
 function main() {
@@ -40,24 +39,20 @@ main();
 
 
 
+function AddEmployee() {
+  db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee', function (err, results) {
+    //console.table(results);
+    console.log("results.length", results.length)    
+    for (i = 0; i < results.length; i++) {
+      employeeArray.push(results[i].manager);
+      }
+      console.info("ASDSADSADSADAS" , employeeArray[0]);
+      console.log("employeeArray.length in ", employeeArray.length);
+      for(var i=0; i < employeeArray.length; i++) {
+        console.log("ba", employeeArray[i] + "!");
+      }
+  console.log("employeeArray.length out", employeeArray.length);
 
-
-
-/*
-//async function AddEmployee() {
-AddEmployee = async () =>  {
-  const mgrChoices = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee');
-  
-  var employeeArray = [];
-  for (i = 0; i < mgrChoices.length; i++) {
-    employeeArray.push(mgrChoices[i].manager);
-    }
-    console.log(employeeArray);
-  }
-
-    //const mgrChoices = await db.query('SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee');
-    //Promise.all(mgrChoices);
-  //const addEmployeeAnswers = await inquirer.prompt(AddEmployeeQuestions);
 
   inquirer.prompt([ 
     { //questions list for Add employee menu
@@ -81,32 +76,39 @@ AddEmployee = async () =>  {
     type: 'list',
     name: 'employees_Manager',
     message: "what is their Managers ID?",
-    choices: [mgrChoices]
+    choices: employeeArray
   }
   ]).then(addEmployeeAnswers => {
-  db.query( 'INSERT INTO employee SET ?', 
-  { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
-  role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
+    db.query( 'INSERT INTO employee SET ?', 
+    { first_name: addEmployeeAnswers.first_name, last_name: addEmployeeAnswers.last_name, manager_id: addEmployeeAnswers.employees_Manager,
+    role_id: addEmployeeAnswers.employee_Role.charAt(0) } );
+    mainMenu();
+      });
+});
+} 
 
-
-  mainMenu();
-}); */
 
 function UpdateEmployeeRole() { //redo
-  db.query('SELECT * FROM employee', function(err, results) {
-    console.table(results);
+  db.query("SELECT * FROM employee", function (err, results) {
+    if (err) throw err;
+    results.forEach((value) => {
+      mgrChoices.push(value.first_name + " " + value.last_name);
+      console.log(mgrChoices);
+    console.table(mgrChoices);
   });
   mainMenu();
-}
+})}
 
 // job title, role id, the department that role belongs to, and the salary for that role
 
-async function ViewAllRoles() {
-  [CurrentRoles] = await db.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department FROM employee 
+function ViewAllRoles() {
+  db.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department FROM employee 
     LEFT JOIN role ON employee.role_id = role.id 
     LEFT JOIN department ON role.department_id = department.id 
-    ORDER BY role.title`);
-  console.table(CurrentRoles);
+    ORDER BY role.title`, function (err, results) {
+  console.table(results);
+  CurrentRoles = results;
+}  );
   mainMenu();
   return CurrentRoles;
 }
@@ -117,23 +119,35 @@ function AddRole() {
 
 
 //department names and department ids DONE
-async function ViewAllDepartments() {
-  [currentDepartments] = await db.query('SELECT * FROM department');
-  console.table(currentDepartments);
+function ViewAllDepartments() {
+  db.query('SELECT * FROM department', function (err, results) {
+    //currentDepartments.push(results);
+    console.table(results);
+    results.forEach((value) => {
+      currentDepartments.push(value.name);
+  });
+  console.log(currentDepartments);
+  
+  });
+
   //console.log(currentDepartments);
+  console.log("****************");
+  //console.table(currentDepartments);
+  console.log(currentDepartments);
+  //console.log("CD", currentDepartments);
   mainMenu();
-  return currentDepartments[0];
+  return currentDepartments;
 }
 
-async function AddDepartment() {
+function AddDepartment() {
 }
 
 //employee ids, first names, last names, job titles, departments, salaries, and managers
-async function ViewAllEmployees() {
-  //const currentEmployees = await db.query({ rowsAsArray: true, sql: 'SELECT * FROM employee' });
-  const currentEmployees = await db.query('SELECT * FROM employee');
-  console.table(currentEmployees[0]);
-  //console.log("currentEmployees.map(obj => obj.first_name)," + currentEmployees.map(obj => obj.last_name))
+function ViewAllEmployees() {
+
+  db.query('SELECT * FROM employee', function (err, results) {
+    console.table(results);
+  });
   mainMenu();
   //console.log(" post currentEmployees", currentEmployees[0]);
   //Promise.all(currentEmployees[0]);
