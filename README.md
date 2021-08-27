@@ -12,8 +12,8 @@ I WANT to be able to view and manage the departments, roles, and employees in my
 SO THAT I can organize and plan my business
 ```
 
-## Walk-through
-
+## Video
+[![Walkthrough Video]](https://user-images.githubusercontent.com/84486941/131074561-f831846b-415f-4cae-a52f-fa93c6d7d816.mp4)
 
 ## Getting Started
 
