@@ -99,27 +99,51 @@ function ViewAllDepartments() { //department names and department ids DONE
   .then( ([rows,fields]) => {
     console.table(rows);
     rows.forEach((value) => {
-      //console.log("value", value);
-      currentDepartments.push(value);
+      console.log("value", value);
+      currentDepartments.push(value.id +" " + value.name);
     });
     main();
   });
 }
 
-/*
 function UpdateEmployeeRole() {
-  inquirer.prompt([{    
+  employeeArray = [];
+  ViewAllRoles()
+  db.promise().query(`SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS name, role.id as roleid, role.title FROM employee 
+  LEFT JOIN role ON employee.role_id = role.id 
+  ORDER BY role.title`)
+  .then( ([rows,fields]) => {
+    //console.log("rows.length/ employee Count", rows.length)    
+    console.log("'\n'");
+    rows.forEach((value) => {
+      //console.log("value", value);
+      //rolesArray.push(value.roleid+" "+value.title);
+      employeeArray.push(value.id+" "+value.name);
+    });
+    //employeeArray.forEach(element => console.log(element));
+    rolesArray.forEach(element => console.log(element))
+    inquirer.prompt([{    
     type: 'list',
     name: 'name',
     message: "Update Role for which employee??",
-    choices: blah
-    }]).then(something => {
-        //db.query( 
+    choices: employeeArray
+    },
+    {
+      type: 'list',
+      name: 'newRole',
+      message: "choice new role for employee",
+      choices: rolesArray
+    }]).then(empchoice => {   
+    console.log("[newRoleChoice.newRole.charAt(0),empchoice.name.charAt(0)])", [empchoice.newRole.charAt(0),empchoice.name.charAt(0)]);
+      db.query('UPDATE employee SET role_id=? WHERE id = ?', [empchoice.newRole.charAt(0),empchoice.name.charAt(0)]);
+      //role_id = ${newRoleChoice.newRole.charAt(0)} WHERE ${empchoice.name.charAt(0)}');
+      
+      // { title: newRole.title, salary: newRole.salary, department_id: newRole.department_id.charAt(0) });
       main();
-    })
-
+    });
+  });
 }
-*/
+  
 
 function AddDepartment() { 
   inquirer.prompt([{    
@@ -138,7 +162,7 @@ function AddRole() {
     console.log("'\n'");
     results.forEach((value) => 
     {
-      console.log("value", value);
+      //console.log("value", value);
       departmentArray.push(value.id+" "+value.name);
     });
   });
@@ -182,7 +206,7 @@ function ViewAllEmployees() {// Done employee ids, first names, last names, job 
       console.table(results);
       results.forEach((value) => {
         //console.log("value", value);
-        currentEmployees.push(value);
+        currentEmployees.push(value.id+" "+value.Name);
      });
     main();
   });
@@ -190,11 +214,11 @@ function ViewAllEmployees() {// Done employee ids, first names, last names, job 
 
 function main() {
   mainMenu();
-  //console.log(currentEmployees);
+  console.log("current emp in main menu" + currentEmployees);
   //console.log("'\n''\n'");
-  console.log(currentDepartments);
+  console.log("current dep in mm" + currentDepartments);
   //console.log("'\n''\n'");
-  //console.log(rolesArray)
+  console.log("roles in main" + rolesArray);
 
   // push values to array only if they dont exist?
   //employee array and current employees mostly same
