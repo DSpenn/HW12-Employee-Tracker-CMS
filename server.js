@@ -32,11 +32,6 @@ function mainMenu() {
     });
 }
 
-//CONCAT(employee.first_name, " ", employee.last_name) AS Name,
-// db.query(`SELECT role.title, role.id, department.name as Department, role.salary FROM employee 
-//  db.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department FROM employee 
-//  db.query(`SELECT role.title, role.id, department.name as Department, role.salary,CONCAT(employee.first_name, " ", employee.last_name) AS Name FROM employee 
-
 main();
 
 function AddEmployee() {
@@ -44,8 +39,7 @@ function AddEmployee() {
   {
     employeeArray = [];
     console.table(results);
-
-    console.log("results.length/ employee Count", results.length)    
+    //console.log("results.length/ employee Count", results.length)    
     for (i = 0; i < results.length; i++) {
       employeeArray.push(results[i].id+" "+results[i].manager);
     }
@@ -104,7 +98,7 @@ function ViewAllDepartments() { //department names and department ids DONE
   .then( ([rows,fields]) => {
     console.table(rows);
     rows.forEach((value) => {
-      console.log("value", value);
+      //console.log("value", value);
       currentDepartments.push(value.id +" " + value.name);
     });
     main();
@@ -113,20 +107,29 @@ function ViewAllDepartments() { //department names and department ids DONE
 
 function UpdateEmployeeRole() {
   employeeArray = [];
-  ViewAllRoles()
+  rolesArray = [];
+  //ViewAllRoles()
   db.promise().query(`SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS name, role.id as roleid, role.title FROM employee 
   LEFT JOIN role ON employee.role_id = role.id 
   ORDER BY role.title`)
   .then( ([rows,fields]) => {
-    //console.log("rows.length/ employee Count", rows.length)    
     console.log("'\n'");
     rows.forEach((value) => {
       //console.log("value", value);
-      //rolesArray.push(value.roleid+" "+value.title);
       employeeArray.push(value.id+" "+value.name);
     });
-    //employeeArray.forEach(element => console.log(element));
-    rolesArray.forEach(element => console.log(element))
+    db.query(`SELECT DISTINCT role.title, role.id, department.name as Department, role.salary FROM role 
+    LEFT JOIN department ON role.department_id = department.id 
+    ORDER BY role.id`, function (err, results) 
+    {
+      console.log("'\n'");
+      console.table(results);
+      results.forEach((value) => 
+      {
+        //console.log("value", value);
+        rolesArray.push(value.id+" "+value.title);
+      });
+  });
     inquirer.prompt([{    
     type: 'list',
     name: 'name',
@@ -139,7 +142,6 @@ function UpdateEmployeeRole() {
       message: "choice new role for employee",
       choices: rolesArray
     }]).then(empchoice => {   
-    console.log("[newRoleChoice.newRole.charAt(0),empchoice.name.charAt(0)])", [empchoice.newRole.charAt(0),empchoice.name.charAt(0)]);
       db.query('UPDATE employee SET role_id=? WHERE id = ?', [empchoice.newRole.charAt(0),empchoice.name.charAt(0)]);
       main();
     });
@@ -194,6 +196,7 @@ function ViewEmployeesByDepartment() {
 }
 
 function ViewEmployeesByManager() { // 
+
     inquirer.prompt([{    
       type: 'list',
       name: 'name',
@@ -227,10 +230,9 @@ function ViewAllEmployees() {// Done employee ids, first names, last names, job 
 function main() {
   console.log("'\n'");
   mainMenu();
-  console.log("current emp in main menu" + currentEmployees);
+//  console.log("current emp in main menu" + currentEmployees);
   //console.log("'\n''\n'");
-  console.log("current dep in mm" + currentDepartments);
+  //console.log("current dep in mm" + currentDepartments);
   //console.log("'\n''\n'");
-  console.log("roles in main" + rolesArray);
+//  console.log("roles in main" + rolesArray);
 }
-
