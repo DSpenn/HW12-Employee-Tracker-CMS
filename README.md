@@ -15,6 +15,8 @@ SO THAT I can organize and plan my business
 ## Video
 [![Walkthrough Video]](https://user-images.githubusercontent.com/84486941/131074561-f831846b-415f-4cae-a52f-fa93c6d7d816.mp4)
 
+[![higher quality]](https://github.com/DSpenn/HW12-Employee-Tracker-CMS/blob/main/Assets/HW12.mp4)
+
 ## Getting Started
 
 Design the database schema as shown in the following image:
