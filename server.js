@@ -203,7 +203,7 @@ function ViewEmployeesByManager() { //
       message: "view employees with manager?",
       choices: currentEmployees
       }]).then(Who => {
-    db.promise().query(`SELECT e.id, e.first_name, e.last_name, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id WHERE m.id > ?`,  [Who.name.charAt(0)])
+    db.promise().query(`SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS employee_name, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id WHERE e.id > ?`,  [Who.name.charAt(0)])
     .then( ([rows,fields]) => {
       console.table(rows);
       main();
@@ -212,6 +212,7 @@ function ViewEmployeesByManager() { //
 }
 
 function ViewAllEmployees() {// Done employee ids, first names, last names, job titles, departments, salaries, and managers DONE
+  currentEmployees = [];
   db.query(`SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department, CONCAT(mgr.first_name, " ", mgr.last_name) AS manager FROM employee 
     LEFT JOIN role ON employee.role_id = role.id 
     LEFT JOIN department ON role.department_id = department.id 
