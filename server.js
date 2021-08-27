@@ -14,7 +14,7 @@ const menu = [{ //main menu
     type: 'list',
     message: 'Main Menu',
     name: 'menuChoice',
-    choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departmements', 'Add Department', 'ViewEmployeesByDepartment', 'ViewEmployeesByManager', 'Quit'],
+    choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departmements', 'Add Department', 'View Employees By Department', 'View Employees By Manager', 'Quit'],
   }];
 
 function mainMenu() {
@@ -26,11 +26,16 @@ function mainMenu() {
       if (menuAnswers.menuChoice === 'Add Role') AddRole();
       if (menuAnswers.menuChoice === 'View All Departmements') ViewAllDepartments();
       if (menuAnswers.menuChoice === 'Add Department') AddDepartment();
-      if (menuAnswers.menuChoice === 'ViewEmployeesByDepartment') ViewEmployeesByDepartment();
-      if (menuAnswers.menuChoice === 'ViewEmployeesByManager') ViewEmployeesByManager();
+      if (menuAnswers.menuChoice === 'View Employees By Department') ViewEmployeesByDepartment();
+      if (menuAnswers.menuChoice === 'View Employees By Manager') ViewEmployeesByManager();
       if (menuAnswers.menuChoice === 'Quit') process.exit();
     });
 }
+
+//CONCAT(employee.first_name, " ", employee.last_name) AS Name,
+// db.query(`SELECT role.title, role.id, department.name as Department, role.salary FROM employee 
+//  db.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Name, role.title, role.salary, department.name as Department FROM employee 
+//  db.query(`SELECT role.title, role.id, department.name as Department, role.salary,CONCAT(employee.first_name, " ", employee.last_name) AS Name FROM employee 
 
 main();
 
@@ -136,14 +141,10 @@ function UpdateEmployeeRole() {
     }]).then(empchoice => {   
     console.log("[newRoleChoice.newRole.charAt(0),empchoice.name.charAt(0)])", [empchoice.newRole.charAt(0),empchoice.name.charAt(0)]);
       db.query('UPDATE employee SET role_id=? WHERE id = ?', [empchoice.newRole.charAt(0),empchoice.name.charAt(0)]);
-      //role_id = ${newRoleChoice.newRole.charAt(0)} WHERE ${empchoice.name.charAt(0)}');
-      
-      // { title: newRole.title, salary: newRole.salary, department_id: newRole.department_id.charAt(0) });
       main();
     });
   });
 }
-  
 
 function AddDepartment() { 
   inquirer.prompt([{    
@@ -192,8 +193,19 @@ function ViewEmployeesByDepartment() {
 
 }
 
-function ViewEmployeesByManager() {
-
+function ViewEmployeesByManager() { // 
+    inquirer.prompt([{    
+      type: 'list',
+      name: 'name',
+      message: "view employees with manager?",
+      choices: currentEmployees
+      }]).then(Who => {
+    db.promise().query(`SELECT e.id, e.first_name, e.last_name, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id WHERE m.id > ?`,  [Who.name.charAt(0)])
+    .then( ([rows,fields]) => {
+      console.table(rows);
+      main();
+    });
+  })
 }
 
 function ViewAllEmployees() {// Done employee ids, first names, last names, job titles, departments, salaries, and managers DONE
@@ -213,13 +225,12 @@ function ViewAllEmployees() {// Done employee ids, first names, last names, job 
 }
 
 function main() {
+  console.log("'\n'");
   mainMenu();
   console.log("current emp in main menu" + currentEmployees);
   //console.log("'\n''\n'");
   console.log("current dep in mm" + currentDepartments);
   //console.log("'\n''\n'");
   console.log("roles in main" + rolesArray);
-
-  // push values to array only if they dont exist?
-  //employee array and current employees mostly same
 }
+
